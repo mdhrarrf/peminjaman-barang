@@ -3,63 +3,108 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPeminjaman;
+use App\Models\Peminjaman;
+use App\Models\Barang;
 use Illuminate\Http\Request;
 
 class DetailPeminjamanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $detailPeminjaman = DetailPeminjaman::with(['peminjaman', 'barang'])->latest()->get();
+        return view('detailpeminjaman.index', compact('detailPeminjaman'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $peminjamanList = Peminjaman::all();
+        $barangList = Barang::where('jumlah', '>', 0)->get();
+        return view('detailpeminjaman.create', compact('peminjamanList', 'barangList'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'peminjaman_id' => 'required|exists:peminjaman,peminjaman_id',
+            'barang_id'     => 'required|exists:barang,barang_id',
+            'jumlah_pinjam' => 'required|integer|min:1',
+        ]);
+
+        
+        $barang = Barang::find($request->barang_id);
+        if ($barang->jumlah < $request->jumlah_pinjam) {
+            return back()->withErrors(['jumlah_pinjam' => 'Stok tidak mencukupi. Stok tersedia: ' . $barang->jumlah])->withInput();
+        }
+
+        
+        $barang->jumlah -= $request->jumlah_pinjam;
+        $barang->save();
+
+        DetailPeminjaman::create($request->all());
+
+        return redirect()->route('detailpeminjaman.index')->with('success', 'Detail berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(DetailPeminjaman $detailPeminjaman)
+    public function edit($id) 
     {
-        //
+   
+        $detailPeminjaman = DetailPeminjaman::with(['peminjaman', 'barang'])->findOrFail($id);
+
+        $peminjamanList = Peminjaman::all();
+        $barangList = Barang::all();
+
+        return view('detailpeminjaman.edit', compact('detailPeminjaman', 'peminjamanList', 'barangList'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(DetailPeminjaman $detailPeminjaman)
+    public function update(Request $request, $id) 
     {
-        //
+        $request->validate([
+            'jumlah_pinjam' => 'required|integer|min:1',
+        ]);
+
+       
+        $detailPeminjaman = DetailPeminjaman::findOrFail($id);
+
+       
+        $barang = $detailPeminjaman->barang;
+        if ($barang) {
+            $barang->jumlah += $detailPeminjaman->jumlah_pinjam;
+            $barang->save();
+        }
+
+        
+        $detailPeminjaman->update(['jumlah_pinjam' => $request->jumlah_pinjam]);
+
+        
+        if ($barang) {
+            if ($barang->jumlah < $request->jumlah_pinjam) {
+             
+                $barang->jumlah += $detailPeminjaman->jumlah_pinjam;
+                $barang->save();
+
+                return back()->withErrors(['jumlah_pinjam' => 'Stok tidak mencukupi. Stok tersedia: ' . $barang->jumlah])->withInput();
+            }
+
+            $barang->jumlah -= $request->jumlah_pinjam;
+            $barang->save();
+        }
+
+        return redirect()->route('detailpeminjaman.index')->with('success', 'Detail berhasil diperbarui!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, DetailPeminjaman $detailPeminjaman)
+    public function destroy($id) 
     {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(DetailPeminjaman $detailPeminjaman)
-    {
-        //
+        $detailPeminjaman = DetailPeminjaman::findOrFail($id);
+
+
+        $barang = $detailPeminjaman->barang;
+        if ($barang) {
+            $barang->jumlah += $detailPeminjaman->jumlah_pinjam;
+            $barang->save();
+        }
+
+        $detailPeminjaman->delete();
+        return redirect()->route('detailpeminjaman.index')->with('success', 'Detail berhasil dihapus!');
     }
 }

@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barang', function (Blueprint $table) {
-            $table->unsignedInteger('barang_id')->autoIncrement();
+            $table->id('barang_id');
+            $table->string('kode_barang')->unique();
             $table->string('nama_barang');
-            $table->integer('jumlah')->default(0);
+            $table->foreignId('kategori_id')->constrained('kategori', 'kategori_id')->onDelete('cascade');
+            $table->integer('stok')->default(0);
+            $table->string('satuan')->nullable();
             $table->string('kondisi')->nullable();
             $table->string('lokasi')->nullable();
             $table->timestamps();

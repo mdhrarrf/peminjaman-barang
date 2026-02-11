@@ -12,17 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('peminjaman', function (Blueprint $table) {
-            $table->unsignedInteger('peminjaman_id')->autoIncrement();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->id('peminjaman_id');
+            $table->foreignId('user_id')->nullable()->constrained('users', 'user_id')->onDelete('set null')->onUpdate('cascade');
             $table->string('peminjam')->nullable();
             $table->date('tanggal_pinjam')->nullable();
             $table->date('tanggal_kembali')->nullable();
-            $table->integer('jumlah_pinjam')->nullable();
             $table->string('status')->default('pending');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('user_id')->on('users')
-                  ->onDelete('set null')->onUpdate('cascade');
         });
     }
 

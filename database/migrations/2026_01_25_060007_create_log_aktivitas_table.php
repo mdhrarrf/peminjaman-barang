@@ -12,12 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('log_aktivitas', function (Blueprint $table) {
-            $table->unsignedInteger('log_id')->autoIncrement();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->id('log_id');
+            $table->foreignId('user_id')->nullable()->constrained('users', 'user_id')->onDelete('set null');
             $table->string('aktivitas', 512);
             $table->timestamp('tanggal')->useCurrent();
-            $table->foreign('user_id')->references('user_id')->on('users')
-                  ->onDelete('set null')->onUpdate('cascade');
         });
     }
 

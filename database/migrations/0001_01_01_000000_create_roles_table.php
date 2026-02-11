@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->unsignedInteger('role_id')->autoIncrement();
-            $table->string('role_name', 100);
+            // Gunakan id() agar tipenya BIGINT UNSIGNED
+            $table->id('role_id');
+            $table->string('role_name');
             $table->timestamps();
         });
     }

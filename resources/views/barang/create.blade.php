@@ -1,0 +1,79 @@
+@extends('layouts.app')
+
+@section('title', isset($barang) ? 'Edit Barang' : 'Tambah Barang')
+
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h3>{{ isset($barang) ? 'Edit Barang' : 'Tambah Barang Baru' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ isset($barang) ? route('barang.update', $barang->barang_id) : route('barang.store') }}" method="POST">
+            @csrf
+            @if(isset($barang))
+                @method('PUT')
+            @endif
+
+            <div class="mb-3">
+                <label for="nama_barang" class="form-label">Nama Barang *</label>
+                <input type="text" class="form-control" id="nama_barang" name="nama_barang" 
+                       value="{{ old('nama_barang', $barang->nama_barang ?? '') }}" required>
+                @error('nama_barang')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="kategori_id" class="form-label">Kategori *</label>
+                <select class="form-control" id="kategori_id" name="kategori_id" required>
+                    <option value="">Pilih Kategori</option>
+                    @foreach($kategori as $kat)
+                        <option value="{{ $kat->id }}" 
+                            {{ (old('kategori_id', $barang->kategori_id ?? '') == $kat->id) ? 'selected' : '' }}>
+                            {{ $kat->nama_kategori }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('kategori_id')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="jumlah" class="form-label">Jumlah *</label>
+                <input type="number" class="form-control" id="jumlah" name="jumlah" 
+                       value="{{ old('jumlah', $barang->jumlah ?? '') }}" required min="0">
+                @error('jumlah')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="kondisi" class="form-label">Kondisi *</label>
+                <select class="form-control" id="kondisi" name="kondisi" required>
+                    <option value="Baik" {{ (old('kondisi', $barang->kondisi ?? '') == 'Baik') ? 'selected' : '' }}>Baik</option>
+                    <option value="Rusak" {{ (old('kondisi', $barang->kondisi ?? '') == 'Rusak') ? 'selected' : '' }}>Rusak</option>
+                    <option value="Perbaikan" {{ (old('kondisi', $barang->kondisi ?? '') == 'Perbaikan') ? 'selected' : '' }}>Perbaikan</option>
+                </select>
+                @error('kondisi')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="lokasi" class="form-label">Lokasi *</label>
+                <input type="text" class="form-control" id="lokasi" name="lokasi" 
+                       value="{{ old('lokasi', $barang->lokasi ?? '') }}" required>
+                @error('lokasi')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ route('barang.index') }}" class="btn btn-secondary">Kembali</a>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
