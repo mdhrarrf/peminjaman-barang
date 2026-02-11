@@ -97,7 +97,7 @@
                                         @foreach($barang as $item)
                                             <option value="{{ $item->barang_id }}" 
                                                 {{ $barangId == $item->barang_id ? 'selected' : '' }}>
-                                                {{ $item->nama_barang }} (Stok: {{ $item->jumlah }})
+                                                {{ $item->nama_barang }} (Stok: {{ $item->stok }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -122,7 +122,7 @@
                                     <option value="">Pilih Barang</option>
                                     @foreach($barang as $item)
                                         <option value="{{ $item->barang_id }}">
-                                            {{ $item->nama_barang }} (Stok: {{ $item->jumlah }})
+                                            {{ $item->nama_barang }} (Stok: {{ $item->stok }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="">-- Pilih Barang --</option>
                     @foreach($barang as $item)
                         <option value="{{ $item->barang_id }}">
-                            {{ $item->nama_barang }} (Stok: {{ $item->jumlah }})
+                            {{ $item->nama_barang }} (Stok: {{ $item->stok }})
                         </option>
                     @endforeach
                 </select>

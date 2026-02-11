@@ -19,7 +19,7 @@ class Barang extends Model
 
     protected $keyType = 'int';
 
-    protected $fillable = ['nama_barang', 'kategori_id', 'jumlah', 'kondisi', 'lokasi'];
+    protected $fillable = ['kode_barang', 'nama_barang', 'kategori_id', 'stok', 'kondisi', 'lokasi'];
 
     public $timestamps = true;
 

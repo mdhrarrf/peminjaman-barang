@@ -19,7 +19,7 @@
                         <th>ID</th>
                         <th>Nama Barang</th>
                         <th>Kategori</th>
-                        <th>Jumlah</th>
+                        <th>Stok</th>
                         <th>Kondisi</th>
                         <th>Lokasi</th>
                         <th>Aksi</th>
@@ -31,7 +31,7 @@
                         <td>{{ $item->barang_id }}</td>
                         <td>{{ $item->nama_barang }}</td>
                         <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
-                        <td>{{ $item->jumlah }}</td>
+                        <td>{{ $item->stok }}</td>
                         <td>
                             <span class="badge bg-{{ $item->kondisi == 'Baik' ? 'success' : 'warning' }}">
                                 {{ $item->kondisi }}

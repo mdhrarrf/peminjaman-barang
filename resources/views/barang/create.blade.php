@@ -28,8 +28,8 @@
                 <select class="form-control" id="kategori_id" name="kategori_id" required>
                     <option value="">Pilih Kategori</option>
                     @foreach($kategori as $kat)
-                        <option value="{{ $kat->id }}" 
-                            {{ (old('kategori_id', $barang->kategori_id ?? '') == $kat->id) ? 'selected' : '' }}>
+                        <option value="{{ $kat->kategori_id }}"
+                            {{ (old('kategori_id', $barang->kategori_id ?? '') == $kat->kategori_id) ? 'selected' : '' }}>
                             {{ $kat->nama_kategori }}
                         </option>
                     @endforeach
@@ -40,10 +40,10 @@
             </div>
 
             <div class="mb-3">
-                <label for="jumlah" class="form-label">Jumlah *</label>
-                <input type="number" class="form-control" id="jumlah" name="jumlah" 
-                       value="{{ old('jumlah', $barang->jumlah ?? '') }}" required min="0">
-                @error('jumlah')
+                <label for="stok" class="form-label">Stok *</label>
+                <input type="number" class="form-control" id="stok" name="stok" 
+                       value="{{ old('stok', $barang->stok ?? '') }}" required min="0">
+                @error('stok')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>

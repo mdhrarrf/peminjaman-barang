@@ -24,13 +24,16 @@ class BarangController extends Controller
     {
         $request->validate([
             'nama_barang' => 'required|string|max:100',
-            'kategori_id' => 'required|exists:kategori,id',
-            'jumlah'      => 'required|integer',
+            'kategori_id' => 'required|exists:kategori,kategori_id',
+            'stok'        => 'required|integer|min:0',
             'kondisi'     => 'required|string',
             'lokasi'      => 'required|string',
         ]);
 
-        Barang::create($request->all());
+        $data = $request->all();
+        $data['kode_barang'] = 'BRG-' . strtoupper(bin2hex(random_bytes(3)));
+
+        Barang::create($data);
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
     }
@@ -45,8 +48,8 @@ class BarangController extends Controller
     {
         $request->validate([
             'nama_barang' => 'required|string|max:100',
-            'kategori_id' => 'required|exists:kategori,id',
-            'jumlah'      => 'required|integer',
+            'kategori_id' => 'required|exists:kategori,kategori_id',
+            'stok'        => 'required|integer|min:0',
         ]);
 
         $barang->update($request->all());

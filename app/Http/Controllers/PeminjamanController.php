@@ -22,8 +22,7 @@ class PeminjamanController extends Controller
     public function create()
     {
         $users = User::all();
-
-        $barang = Barang::where('jumlah', '>', 0)->get();
+        $barang = Barang::where('stok', '>', 0)->get();
 
         return view('peminjaman.create', compact('users', 'barang'));
     }
@@ -38,7 +37,6 @@ class PeminjamanController extends Controller
             'status'          => 'required|in:Dipinjam,Dikembalikan,Pending',
         ]);
 
-
         $peminjamanData = [
             'peminjam' => $request->peminjam,
             'tanggal_pinjam' => $request->tanggal_pinjam,
@@ -46,36 +44,32 @@ class PeminjamanController extends Controller
             'status' => $request->status,
         ];
 
-
         if ($request->user_id) {
             $peminjamanData['user_id'] = $request->user_id;
         }
 
-    
         $peminjaman = Peminjaman::create($peminjamanData);
 
-    
         if ($request->has('barang_id')) {
             foreach ($request->barang_id as $index => $barangId) {
                 if ($barangId && isset($request->jumlah_pinjam[$index])) {
                     $jumlahPinjam = $request->jumlah_pinjam[$index];
 
-               
                     $barang = Barang::find($barangId);
-                    if ($barang && $barang->jumlah >= $jumlahPinjam) {
+                    // PERBAIKAN: Ganti 'jumlah' menjadi 'stok'
+                    if ($barang && $barang->stok >= $jumlahPinjam) {
                         $peminjaman->detailPeminjaman()->create([
                             'barang_id' => $barangId,
                             'jumlah_pinjam' => $jumlahPinjam
                         ]);
 
-                      
-                        $barang->jumlah -= $jumlahPinjam;
+                        // PERBAIKAN: Ganti 'jumlah' menjadi 'stok'
+                        $barang->stok -= $jumlahPinjam;
                         $barang->save();
                     } else {
-                      
                         $peminjaman->delete();
                         return back()->withErrors([
-                            'barang_id.' . $index => 'Stok barang "' . ($barang->nama_barang ?? 'Unknown') . '" tidak mencukupi. Stok tersedia: ' . ($barang->jumlah ?? 0)
+                            'barang_id.' . $index => 'Stok barang "' . ($barang->nama_barang ?? 'Unknown') . '" tidak mencukupi. Stok tersedia: ' . ($barang->stok ?? 0)
                         ])->withInput();
                     }
                 }
@@ -107,11 +101,10 @@ class PeminjamanController extends Controller
 
     public function destroy(Peminjaman $peminjaman)
     {
-       
         foreach ($peminjaman->detailPeminjaman as $detail) {
             $barang = Barang::find($detail->barang_id);
             if ($barang) {
-                $barang->jumlah += $detail->jumlah_pinjam;
+                $barang->stok += $detail->jumlah_pinjam;
                 $barang->save();
             }
         }
